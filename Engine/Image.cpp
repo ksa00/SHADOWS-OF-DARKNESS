@@ -191,5 +191,21 @@ namespace Image
 		}
 		return _datas[handle]->transform.GetWorldMatrix();
 	}
+
+	int GetWidth(int handle) {
+		if (handle < 0 || handle >= _datas.size() || _datas[handle] == nullptr) {
+			return 0;
+		}
+		DirectX::XMFLOAT3 size = _datas[handle]->pSprite->GetTextureSize();
+		return static_cast<int>(size.x);
+	}
+
+	int GetHeight(int handle) {
+		if (handle < 0 || handle >= _datas.size() || _datas[handle] == nullptr) {
+			return 0;
+		}
+		DirectX::XMFLOAT3 size = _datas[handle]->pSprite->GetTextureSize();
+		return static_cast<int>(size.y);
+	}
 }
 
