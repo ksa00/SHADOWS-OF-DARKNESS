@@ -9,7 +9,7 @@ class Player : public GameObject
 public:
     // コンストラクタ
     // 引数：parent  親オブジェクト（SceneManager）
-    Player(GameObject* parent, const std::string& name, int attributeImageHandle);
+    Player(GameObject* parent);
 
     // デストラクタ
     ~Player();
@@ -26,11 +26,7 @@ public:
     // 開放
     void Release() override;
 
-    // 攻撃
-    void Attack();
-
-    // ダメージを受ける
-    void TakeDamage(int amount);
+   
 
     // パワーアップを適用
     void ApplyPowerUp(int powerUpImageHandle);
@@ -38,8 +34,7 @@ public:
     // パワーアップを収集
     void CollectPowerUp(PowerUp* powerUp);
 
-    // プレイヤー名を設定
-    void SetName(const std::string& playerName);
+    
 
     // スコアを更新
     void UpdateScore(int points);
@@ -49,19 +44,51 @@ public:
 
     // ゲッター
     const std::string& GetName() const;
-    int GetAttributeImageHandle() const;
+    int GetAttribute() const;
     int GetHealth() const;
     int GetScore() const;
     int GetLevel() const;
 
+  
+
 private:
-    int Shadow_img;
+    enum State {
+        Idle_,
+        Run_,
+        Jump_,
+        Fall_,
+        Hit_,
+        Attack_,
+        Dash_,
+        Death_,
+        // Add more as needed
+    };
+    State currentState;
     std::string name;
-    int attributeImageHandle;
+    int IdleImg;
+    int RunImg;
+    int JumpImg;
+    int FallImg;
+    int HitImg;
+    int AttackImg;
+    int DashImg;
+    int DeathImg;
+    int Attribute;
     int health;
     int score;
     int level;
-    int activePowerUpImageHandle;
-    AnimationManager animationManager;
-    Animation* currentAnimation;
+    int activePowerUp;
+    Animation* animation;
+    // プレイヤー名を設定
+    void SetName(const std::string& playerName);
+    void SetHealth(int health);
+    void SetAttribute(int handle);
+    void SetActivePowerUp(int handle);
+    void Run();
+    void Jump();
+    void fall();
+    void Attack();
+    void Hit(int amount);
+    void Dash();
+    void Death();
 };

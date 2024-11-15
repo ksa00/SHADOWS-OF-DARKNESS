@@ -33,7 +33,9 @@ namespace Image
 		//コンストラクタ
 		ImageData() : pSprite(nullptr)
 		{
+
 			fileName = "";
+			//rect={0,0,0,0};
 			alpha = 1.0f;
 			pSprite = nullptr;
 		}

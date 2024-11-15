@@ -3,40 +3,47 @@
 #include "Engine/Image.h"
 
 
-Player::Player(GameObject* parent, const std::string& name, int attributeImageHandle)
-    : GameObject(parent, name), name(name), attributeImageHandle(attributeImageHandle), health(100), currentAnimation(nullptr) {}
+Player::Player(GameObject* parent)
+    : GameObject(parent,"Player"),
+    name(""),
+    Attribute(-1),
+    health(100), 
+    score(0), 
+    level(1),
+    activePowerUp(-1),
+    animation(nullptr) ,
+    currentState(Idle_)
 
-Player::~Player() {}
+{
+ IdleImg=-1;
+     RunImg = -1;
+     JumpImg = -1;
+     FallImg = -1;
+     HitImg = -1;
+     AttackImg = -1;
+     DashImg = -1;
+     DeathImg = -1;
+}
 
-void Player::Initialize() {
-    // Load the spritesheet
-    int spritesheetHandle = Image::Load("spritesheet.png");
+Player::~Player() {
+    delete animation;
+}
 
-    // Initialize animations with frames from the spritesheet
-    animationManager.AddAnimation("Idle", new Animation("Idle", 48, 48, 4, 0.25f, spritesheetHandle));
-    animationManager.AddAnimation("Run", new Animation("Run", 48, 48, 6, 0.1f, spritesheetHandle));
-    animationManager.AddAnimation("Jump", new Animation("Jump", 48, 48, 2, 0.2f, spritesheetHandle));
-    animationManager.AddAnimation("Fall", new Animation("Fall", 48, 48, 2, 0.2f, spritesheetHandle));
-    animationManager.AddAnimation("Hit", new Animation("Hit", 48, 48, 3, 0.15f, spritesheetHandle));
-    animationManager.AddAnimation("Attack", new Animation("Attack", 131, 56, 5, 0.1f, spritesheetHandle));
-    animationManager.AddAnimation("Dash", new Animation("Dash", 112, 56, 4, 0.1f, spritesheetHandle));
-    animationManager.AddAnimation("Death", new Animation("Death", 76, 48, 6, 0.2f, spritesheetHandle));
+void Player::Initialize()
+{
+ //testing a animation first
+    IdleImg = Image::Load("Player/Idle.png");
+    animation=new Animation(48, 48, 12, 0.055f, IdleImg);
 
-    currentAnimation = animationManager.GetAnimation("Idle");
+   
 }
 
 void Player::Update() {
-    // Update the current animation
-    if (currentAnimation) {
-        currentAnimation->Update();
-    }
+    animation->Update();
 }
 
 void Player::Draw() {
-    // Draw the current animation
-    if (currentAnimation) {
-        currentAnimation->Draw(100, 100); // Example position
-    }
+    animation->Draw(50.0f,500.0f);
 }
 
 void Player::Release() {
@@ -44,17 +51,17 @@ void Player::Release() {
 }
 
 void Player::Attack() {
-    currentAnimation = animationManager.GetAnimation("Attack");
+    currentState = Attack_;
 }
 
-void Player::TakeDamage(int amount) {
+void Player::Hit(int amount) {
     health -= amount;
     if (health < 0) health = 0;
-    currentAnimation = animationManager.GetAnimation("Hit");
+    currentState = Hit_;
 }
 
 void Player::ApplyPowerUp(int powerUpImageHandle) {
-    activePowerUpImageHandle = powerUpImageHandle;
+    activePowerUp = powerUpImageHandle;
 }
 
 void Player::CollectPowerUp(PowerUp* powerUp) {
@@ -78,8 +85,8 @@ const std::string& Player::GetName() const {
     return name;
 }
 
-int Player::GetAttributeImageHandle() const {
-    return attributeImageHandle;
+int Player::GetAttribute() const {
+    return Attribute;
 }
 
 int Player::GetHealth() const {
@@ -92,4 +99,40 @@ int Player::GetScore() const {
 
 int Player::GetLevel() const {
     return level;
+}
+
+void Player::SetHealth(int health) {
+    this->health = health;
+}
+
+void Player::SetAttribute(int handle)
+{
+    this->Attribute = handle;
+}
+
+
+void Player::SetActivePowerUp(int handle)
+{
+    this->activePowerUp = handle;
+
+}
+
+void Player::Run()
+{
+}
+
+void Player::Jump()
+{
+}
+
+void Player::fall()
+{
+}
+
+void Player::Dash()
+{
+}
+
+void Player::Death()
+{
 }
