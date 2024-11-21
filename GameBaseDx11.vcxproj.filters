@@ -100,6 +100,7 @@
     <ClCompile Include="PowerUp.cpp" />
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="Stage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\BoxCollider.h">
@@ -176,6 +177,7 @@
     <ClInclude Include="PowerUp.h" />
     <ClInclude Include="Animation.h" />
     <ClInclude Include="GameData.h" />
+    <ClInclude Include="Stage.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\Simple2D.hlsl">

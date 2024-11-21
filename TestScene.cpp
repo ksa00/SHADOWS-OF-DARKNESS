@@ -1,5 +1,6 @@
 #include "TestScene.h"
 #include"Player.h"
+#include"Stage.h"
 //コンストラクタ
 TestScene::TestScene(GameObject * parent)
 	: GameObject(parent, "TestScene")
@@ -10,6 +11,7 @@ TestScene::TestScene(GameObject * parent)
 void TestScene::Initialize()
 {
 	Instantiate<Player>(this);
+	Instantiate<Stage>(this);
 }
 
 //更新

@@ -1,68 +1,46 @@
 #pragma once
 #include "Engine/GameObject.h"
+#include "Animation.h"
 #include"PowerUp.h"
 #include <string>
-#include"Animation.h"
+#include <vector>
 
-class Player : public GameObject
-{
+class Player : public GameObject {
 public:
-    // コンストラクタ
-    // 引数：parent  親オブジェクト（SceneManager）
     Player(GameObject* parent);
-
-    // デストラクタ
     ~Player();
-
-    // 初期化
     void Initialize() override;
-
-    // 更新
     void Update() override;
-
-    // 描画
     void Draw() override;
-
-    // 開放
     void Release() override;
-
-   
-
-    // パワーアップを適用
     void ApplyPowerUp(int powerUpImageHandle);
-
-    // パワーアップを収集
     void CollectPowerUp(PowerUp* powerUp);
-
-    
-
-    // スコアを更新
     void UpdateScore(int points);
-
-    // レベルを更新
     void UpdateLevel(int newLevel);
-
-    // ゲッター
     const std::string& GetName() const;
     int GetAttribute() const;
     int GetHealth() const;
     int GetScore() const;
     int GetLevel() const;
 
-  
-
 private:
     enum State {
-        Idle_,
-        Run_,
-        Jump_,
-        Fall_,
-        Hit_,
-        Attack_,
-        Dash_,
-        Death_,
-        // Add more as needed
+        Idle_, Run_, Jump_, Fall_, Hit_, Attack_, Dash_, Death_
     };
+    void HandleInput();
+    void ApplyGravity();
+    void CheckLanding();
+    void Idle();
+    void Run();
+    void Jump();
+    void Fall();
+    void Attack();
+    void Dash();
+    void Hit(int amount);
+    void Death();
+    void SetAnimationState(State newState);
+
+    
     State currentState;
     std::string name;
     int IdleImg;
@@ -78,17 +56,18 @@ private:
     int score;
     int level;
     int activePowerUp;
-    Animation* animation;
-    // プレイヤー名を設定
+    Animation* baseAnimation;
+    std::vector<Animation*> overlayAnimations;
     void SetName(const std::string& playerName);
     void SetHealth(int health);
     void SetAttribute(int handle);
     void SetActivePowerUp(int handle);
-    void Run();
-    void Jump();
-    void fall();
-    void Attack();
-    void Hit(int amount);
-    void Dash();
-    void Death();
+    bool isGrounded; // Flag to check if the player is on the ground
+    float groundLevel; // Define the ground level
+    bool facingRight; // Track the player's direction
+    float speed; // Movement speed
+    float jumpVelocity; // Track the player's jump velocity
+    float jumpForce; // Jump force
+    float gravity; // Gravity
+    float dashSpeed; // Dash speed
 };

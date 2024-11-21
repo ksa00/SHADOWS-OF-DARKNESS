@@ -207,5 +207,14 @@ namespace Image
 		DirectX::XMFLOAT3 size = _datas[handle]->pSprite->GetTextureSize();
 		return static_cast<int>(size.y);
 	}
+
+	void ConvertToNDC(const Transform& transform, float& ndcX, float& ndcY)
+	{
+		ndcX = (2.0f * transform.position_.x) / Direct3D::screenWidth_ - 1.0f;
+		ndcY = 1.0f - (2.0f * transform.position_.y) / Direct3D::screenHeight_;
+	}
+
+
+
 }
 

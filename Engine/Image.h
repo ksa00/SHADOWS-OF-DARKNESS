@@ -92,4 +92,5 @@ namespace Image
 	XMMATRIX GetMatrix(int handle);
 	int GetWidth(int handle);
 	int GetHeight(int handle);
+ void ConvertToNDC(const Transform& transform, float& ndcX, float& ndcY);
 }
