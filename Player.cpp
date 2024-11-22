@@ -175,7 +175,7 @@ void Player::SetAnimationState(State newState) {
             baseAnimation->SetAnimation(48, 48, 4, 0.1f, FallImg); // Adjusted frame time for quicker fall
             break;
         case Attack_:
-            baseAnimation->SetAnimation(128, 54, 15, 0.05f, AttackImg); // Adjusted frame dimensions and time
+            baseAnimation->SetAnimation(128, 58, 16, 0.05f, AttackImg); // Adjusted frame dimensions and time
             break;
         case Dash_:
             baseAnimation->SetAnimation(112, 56, 5, 0.07f, DashImg); // Adjusted frame time

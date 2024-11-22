@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Engine/GameObject.h"
 #include "Animation.h"
 #include "Attributes.h"
@@ -49,11 +48,25 @@ protected:
     float patrolStartX;
     float patrolEndX;
     float chaseDistance;
+    float attackRange; // Attack range for the enemy
     float shootingRange;
     float shootingCooldown;
 
     // Direction handling
     bool facingRight;
+
+    // Player reference
+    Player* player;
+
+    // Helper function to check if the player is in range
+    bool PlayerInRange();
+    bool PlayerInAttackRange();
+
+    // AI behaviors
+    void Patrol();
+    void Chase(Player& player);
+    void AttackPlayer(Player& player);
+    void Shoot(Player& player);
 
 private:
     int IdleImg;
@@ -61,9 +74,4 @@ private:
     int AttackImg;
     int HitImg;
     int DeathImg;
-
-    // AI behaviors
-    void Patrol();
-    void Chase(Player& player);
-    void Shoot(Player& player);
 };

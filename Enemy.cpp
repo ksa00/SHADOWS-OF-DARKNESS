@@ -1,11 +1,10 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Engine/Image.h"
-#include "Engine/Debug.h"
 #include <cassert>
 
 Enemy::Enemy(GameObject* parent)
-    : GameObject(parent, "Enemy"), health(100), attackPower(10), defense(5), speed(1.0f), attribute(-1), currentState(Idle_), facingRight(true)
+    : GameObject(parent, "Enemy"), health(100), attackPower(10), defense(5), speed(1.0f), attribute(-1), currentState(Idle_), facingRight(true), player(nullptr)
 {
     baseAnimation = nullptr;
     IdleImg = -1;
@@ -37,14 +36,18 @@ void Enemy::Initialize() {
 
     // Set initial animation to Idle
     SetPosition({ 600.0f, 500.0f, 0.0f }); // Example position
-    baseAnimation = new Animation(32, 64, 6, 0.055f, IdleImg);
+    baseAnimation = new Animation(32, 64, 6, 0.1f, IdleImg); // Adjusted frame time to 0.1 seconds per frame
 
     // Initialize AI-specific properties
     patrolStartX = 600.0f; // Example start position for patrolling
     patrolEndX = 800.0f;   // Example end position for patrolling
     chaseDistance = 200.0f; // Example chase distance
+    attackRange = 50.0f;   // Example attack range
     shootingRange = 150.0f; // Example shooting range
     shootingCooldown = 1.0f; // Example shooting cooldown in seconds
+
+    // Find and set the player reference
+    player = dynamic_cast<Player*>(FindObject("Player"));
 }
 
 void Enemy::Update() {
@@ -72,6 +75,22 @@ int Enemy::GetAttribute() const {
 
 void Enemy::SetAttribute(int newAttribute) {
     attribute = newAttribute;
+}
+
+bool Enemy::PlayerInRange() {
+    if (player) {
+        float distance = player->GetPosition().x - GetPosition().x;
+        return abs(distance) < chaseDistance;
+    }
+    return false;
+}
+
+bool Enemy::PlayerInAttackRange() {
+    if (player) {
+        float distance = player->GetPosition().x - GetPosition().x;
+        return abs(distance) < attackRange;
+    }
+    return false;
 }
 
 void Enemy::TakeDamage(int amount) {
@@ -105,53 +124,16 @@ void Enemy::Attack(Player& player) {
 }
 
 void Enemy::HandleAI() {
-    switch (currentState) {
-    case Idle_:
-        Patrol();
-        break;
-    case Run_:
-        // Optionally handle run logic separately if needed
-        break;
-    case Attack_:
-        // Optionally handle attack logic separately if needed
-        break;
-    case Hit_:
-        // Optionally handle hit logic separately if needed
-        break;
-    case Death_:
-        // Optionally handle death logic separately if needed
-        break;
+    if (PlayerInAttackRange()) {
+        AttackPlayer(*player);
     }
-}
-void Enemy::Patrol() {
-    Debug::Log("Patrolling. Current position: " + std::to_string(GetPosition().x) + ", Facing right: " + std::to_string(facingRight), true);
-
-    if (facingRight) {
-        SetPosition({ GetPosition().x + speed, GetPosition().y, GetPosition().z });
-        Debug::Log("Moving right. New position: " + std::to_string(GetPosition().x), true);
-        if (GetPosition().x >= patrolEndX) {
-            facingRight = false;
-            Debug::Log("Reached patrol end. Switching direction to left.", true);
-        }
+    else if (PlayerInRange()) {
+        Chase(*player);
     }
     else {
-        SetPosition({ GetPosition().x - speed, GetPosition().y, GetPosition().z });
-        Debug::Log("Moving left. New position: " + std::to_string(GetPosition().x), true);
-        if (GetPosition().x <= patrolStartX) {
-            facingRight = true;
-            Debug::Log("Reached patrol start. Switching direction to right.", true);
-        }
+        Patrol();
     }
-
-    Debug::Log("Animation state before setting: " + std::to_string(currentState), true);
-    SetAnimationState(Run_);
-    Debug::Log("Animation state after setting: " + std::to_string(currentState), true);
-
-    // Add log to confirm direction change and state after movement
-    Debug::Log("Current direction after movement: " + std::to_string(facingRight) + ", Position: " + std::to_string(GetPosition().x), true);
 }
-
-
 
 void Enemy::Chase(Player& player) {
     float distance = player.GetPosition().x - GetPosition().x;
@@ -169,6 +151,28 @@ void Enemy::Chase(Player& player) {
     else {
         SetAnimationState(Idle_);
     }
+}
+
+void Enemy::Patrol() {
+    if (facingRight) {
+        SetPosition({ GetPosition().x + speed, GetPosition().y, GetPosition().z });
+        if (GetPosition().x >= patrolEndX) {
+            facingRight = false;
+        }
+    }
+    else {
+        SetPosition({ GetPosition().x - speed, GetPosition().y, GetPosition().z });
+        if (GetPosition().x <= patrolStartX) {
+            facingRight = true;
+        }
+    }
+    SetAnimationState(Run_);
+}
+
+void Enemy::AttackPlayer(Player& player) {
+    SetAnimationState(Attack_);
+    // Perform the attack
+    Attack(player);
 }
 
 void Enemy::Shoot(Player& player) {
@@ -193,19 +197,19 @@ void Enemy::SetAnimationState(State newState) {
 
         switch (newState) {
         case Idle_:
-            baseAnimation->SetAnimation(32, 64, 6, 0.055f, IdleImg);
+            baseAnimation->SetAnimation(32, 64, 6, 0.1f, IdleImg); // Adjusted frame time
             break;
         case Run_:
-            baseAnimation->SetAnimation(32, 64, 4, 0.075f, RunImg);
+            baseAnimation->SetAnimation(32, 64, 4, 0.08f, RunImg); // Adjusted frame time
             break;
         case Attack_:
-            baseAnimation->SetAnimation(137, 40, 8, 0.05f, AttackImg);
+            baseAnimation->SetAnimation(128, 37, 8, 0.07f, AttackImg); // Adjusted frame time
             break;
         case Hit_:
-            baseAnimation->SetAnimation(48, 48, 4, 0.1f, HitImg);
+            baseAnimation->SetAnimation(48, 48, 4, 0.12f, HitImg); // Adjusted frame time
             break;
         case Death_:
-            baseAnimation->SetAnimation(31, 40, 11, 0.12f, DeathImg);
+            baseAnimation->SetAnimation(256, 30, 11, 0.15f, DeathImg); // Adjusted frame time
             break;
         }
     }
