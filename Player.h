@@ -1,7 +1,9 @@
 #pragma once
 #include "Engine/GameObject.h"
 #include "Animation.h"
-#include"PowerUp.h"
+#include "PowerUp.h"
+#include "Attributes.h"
+#include "Enemy.h"
 #include <string>
 #include <vector>
 
@@ -23,6 +25,15 @@ public:
     int GetScore() const;
     int GetLevel() const;
 
+    // Attribute management
+    void AddAttribute(int attribute);
+    void SetActiveAttributes(const std::vector<int>& attributes);
+    const std::vector<int>& GetActiveAttributes() const;
+
+    // Combat mechanics
+    void Attack(Enemy& enemy);
+    void TakeDamage(int amount);
+
 private:
     enum State {
         Idle_, Run_, Jump_, Fall_, Hit_, Attack_, Dash_, Death_
@@ -40,7 +51,6 @@ private:
     void Death();
     void SetAnimationState(State newState);
 
-    
     State currentState;
     std::string name;
     int IdleImg;
@@ -51,17 +61,18 @@ private:
     int AttackImg;
     int DashImg;
     int DeathImg;
-    int Attribute;
     int health;
     int score;
     int level;
     int activePowerUp;
+    int attackPower;  // Added attack power
     Animation* baseAnimation;
     std::vector<Animation*> overlayAnimations;
+    std::vector<int> activeAttributes; // Active attributes for the stage
+    std::vector<int> acquiredAttributes; // All acquired attributes
+
     void SetName(const std::string& playerName);
     void SetHealth(int health);
-    void SetAttribute(int handle);
-    void SetActivePowerUp(int handle);
     bool isGrounded; // Flag to check if the player is on the ground
     float groundLevel; // Define the ground level
     bool facingRight; // Track the player's direction

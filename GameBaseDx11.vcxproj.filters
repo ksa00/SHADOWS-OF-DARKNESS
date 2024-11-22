@@ -99,8 +99,8 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PowerUp.cpp" />
     <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="GameData.cpp" />
     <ClCompile Include="Stage.cpp" />
+    <ClCompile Include="Enemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\BoxCollider.h">
@@ -176,8 +176,9 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerUp.h" />
     <ClInclude Include="Animation.h" />
-    <ClInclude Include="GameData.h" />
     <ClInclude Include="Stage.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Attributes.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\Simple2D.hlsl">

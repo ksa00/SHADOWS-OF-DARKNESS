@@ -1,16 +1,17 @@
 #include "Player.h"
+#include "Enemy.h"
 #include "Engine/Image.h"
-#include "Engine/Input.h" // Assuming there is an Input class for handling player input
+#include "Engine/Input.h"
 #include <cassert>
 
 Player::Player(GameObject* parent)
     : GameObject(parent, "Player"),
     name(""),
-    Attribute(-1),
     health(100),
     score(0),
     level(1),
     activePowerUp(-1),
+    attackPower(10), // Initialize attack power
     baseAnimation(nullptr),
     currentState(Idle_),
     isGrounded(true), // Initialize player as grounded
@@ -30,6 +31,8 @@ Player::Player(GameObject* parent)
     AttackImg = -1;
     DashImg = -1;
     DeathImg = -1;
+
+    activeAttributes.push_back(ATTR_FIRE); // Starting attribute
 }
 
 Player::~Player() {
@@ -59,7 +62,7 @@ void Player::Initialize() {
     assert(DeathImg >= 0);
 
     // Set initial animation to Idle
-    transform_.position_ = { 50.0f, groundLevel, 0.0f };
+    SetPosition({ 50.0f, groundLevel, 0.0f });
     baseAnimation = new Animation(48, 48, 12, 0.055f, IdleImg);
 }
 
@@ -123,11 +126,11 @@ void Player::HandleInput() {
 
     // Apply movement
     if (Input::IsKey(DIK_A)) {
-        transform_.position_.x -= speed;
+        SetPosition({ GetPosition().x - speed, GetPosition().y, GetPosition().z });
         facingRight = false;
     }
     if (Input::IsKey(DIK_D)) {
-        transform_.position_.x += speed;
+        SetPosition({ GetPosition().x + speed, GetPosition().y, GetPosition().z });
         facingRight = true;
     }
 }
@@ -136,19 +139,19 @@ void Player::ApplyGravity() {
     // Apply gravity if not grounded
     if (!isGrounded) {
         jumpVelocity += gravity;
-        transform_.position_.y += jumpVelocity;
+        SetPosition({ GetPosition().x, GetPosition().y + jumpVelocity, GetPosition().z });
     }
 }
 
 void Player::CheckLanding() {
     // Check if the player is landing on the ground
-    if (!isGrounded && transform_.position_.y >= groundLevel) {
+    if (!isGrounded && GetPosition().y >= groundLevel) {
         isGrounded = true;
-        transform_.position_.y = groundLevel; // Ensure player doesn't fall through the ground
+        SetPosition({ GetPosition().x, groundLevel, GetPosition().z }); // Ensure player doesn't fall through the ground
         jumpVelocity = 0.0f;
         SetAnimationState(Fall_);
     }
-    else if (isGrounded && transform_.position_.y < groundLevel) {
+    else if (isGrounded && GetPosition().y < groundLevel) {
         isGrounded = false;
     }
 }
@@ -207,20 +210,20 @@ void Player::Attack() {
     // Move the player forward a certain distance when attacking
     float attackMoveDistance = 10.0f; // Adjust the distance as needed
     if (facingRight) {
-        transform_.position_.x += attackMoveDistance;
+        SetPosition({ GetPosition().x + attackMoveDistance, GetPosition().y, GetPosition().z });
     }
     else {
-        transform_.position_.x -= attackMoveDistance;
+        SetPosition({ GetPosition().x - attackMoveDistance, GetPosition().y, GetPosition().z });
     }
     SetAnimationState(Attack_);
 }
 
 void Player::Dash() {
     if (facingRight) {
-        transform_.position_.x += dashSpeed;
+        SetPosition({ GetPosition().x + dashSpeed, GetPosition().y, GetPosition().z });
     }
     else {
-        transform_.position_.x -= dashSpeed;
+        SetPosition({ GetPosition().x - dashSpeed, GetPosition().y, GetPosition().z });
     }
     SetAnimationState(Dash_);
 }
@@ -257,7 +260,7 @@ const std::string& Player::GetName() const {
 }
 
 int Player::GetAttribute() const {
-    return Attribute;
+    return activeAttributes.empty() ? -1 : activeAttributes.front();
 }
 
 int Player::GetHealth() const {
@@ -276,12 +279,42 @@ void Player::SetHealth(int health) {
     this->health = health;
 }
 
-void Player::SetAttribute(int handle) {
-    this->Attribute = handle;
+void Player::AddAttribute(int attribute) {
+    acquiredAttributes.push_back(attribute);
 }
 
-void Player::SetActivePowerUp(int handle) {
-    this->activePowerUp = handle;
+void Player::SetActiveAttributes(const std::vector<int>& attributes) {
+    activeAttributes = attributes;
+}
+
+const std::vector<int>& Player::GetActiveAttributes() const {
+    return activeAttributes;
+}
+
+void Player::TakeDamage(int amount) {
+    health -= amount;
+    if (health <= 0) {
+        Death();
+    }
+}
+
+void Player::Attack(Enemy& enemy) {
+    int baseDamage = attackPower;
+    int finalDamage = baseDamage;
+
+    for (int attr : activeAttributes) {
+        if (attr == ATTR_FIRE && enemy.GetAttribute() == ATTR_WATER) {
+            finalDamage /= 2;
+        }
+        else if (attr == ATTR_WATER && enemy.GetAttribute() == ATTR_FIRE) {
+            finalDamage *= 2;
+        }
+        // Other attribute interactions...
+    }
+
+    if (finalDamage > 0) {
+        enemy.TakeDamage(finalDamage);
+    }
 }
 
 void Player::Death() {
