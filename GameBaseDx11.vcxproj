@@ -134,6 +134,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="AttributeFactory.cpp" />
+    <ClCompile Include="Attributes.cpp" />
+    <ClCompile Include="AttributeSelectionScreen.cpp" />
+    <ClCompile Include="CombatSystem.cpp" />
+    <ClCompile Include="DarkAttribute.cpp" />
+    <ClCompile Include="EarthAttribute.cpp" />
+    <ClCompile Include="ElectricAttribute.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Engine\Audio.cpp" />
     <ClCompile Include="Engine\BillBoard.cpp" />
@@ -158,14 +165,24 @@
     <ClCompile Include="Engine\Text.cpp" />
     <ClCompile Include="Engine\Texture.cpp" />
     <ClCompile Include="Engine\Transform.cpp" />
+    <ClCompile Include="FireAttribute.cpp" />
+    <ClCompile Include="IceAttribute.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PowerUp.cpp" />
     <ClCompile Include="Stage.cpp" />
-    <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="TitleScene.cpp" />
+    <ClCompile Include="WaterAttribute.cpp" />
+    <ClCompile Include="WindAttribute.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="AttributeFactory.h" />
     <ClInclude Include="Attributes.h" />
+    <ClInclude Include="AttributeSelectionScreen.h" />
+    <ClInclude Include="CombatSystem.h" />
+    <ClInclude Include="DarkAttribute.h" />
+    <ClInclude Include="EarthAttribute.h" />
+    <ClInclude Include="ElectricAttribute.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Engine\Audio.h" />
     <ClInclude Include="Engine\BillBoard.h" />
@@ -190,10 +207,14 @@
     <ClInclude Include="Engine\Text.h" />
     <ClInclude Include="Engine\Texture.h" />
     <ClInclude Include="Engine\Transform.h" />
+    <ClInclude Include="FireAttribute.h" />
+    <ClInclude Include="IceAttribute.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerUp.h" />
     <ClInclude Include="Stage.h" />
-    <ClInclude Include="TestScene.h" />
+    <ClInclude Include="TitleScene.h" />
+    <ClInclude Include="WaterAttribute.h" />
+    <ClInclude Include="WindAttribute.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\BillBoard.hlsl">

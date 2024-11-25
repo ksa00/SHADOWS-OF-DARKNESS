@@ -1,32 +1,31 @@
 #pragma once
+#include"Engine/Image.h"
 #include <vector>
-#include "Engine/Image.h"
+
 
 class Animation {
 public:
-    Animation(int frameWidth, int frameHeight, int frameCount, float frameDuration, int imageHandle);
+    Animation(int frameWidth, int frameHeight, int frameCount, float frameDuration, int imageHandle, int startFrame = 0, bool loop_ = true);
     void Update();
-    void Draw(const Transform& transform, bool facingRight = false);
-    void SetAnimation(int frameWidth, int frameHeight, int frameCount, float frameDuration, int imageHandle);
+    void Draw(const Transform& transform, bool facingRight);
+    void SetAnimation(int frameWidth, int frameHeight, int frameCount, float frameDuration, int imageHandle, int startFrame = 0,bool loop_=true);
     void AddOverlayAnimation(Animation* animation);
     void ClearOverlayAnimations();
-
+bool IsAnimationComplete() const;
 private:
-    struct Frame {
-        int x, y, width, height;
-    };
+    void CalculateFrames();
+
+    
 
     int frameWidth;
     int frameHeight;
     int frameCount;
-    float frameDuration; // Duration of each frame in seconds
-    float currentTime;   // Time accumulator
+    float frameDuration;
+    float currentTime;
     int currentFrame;
+    int startFrame;
+    bool loop;
     int imageHandle;
-
-    std::vector<Frame> frames;
+    std::vector<RECT> frames;
     std::vector<Animation*> overlayAnimations;
-
-    void CalculateFrames();
-    void ConvertToNDC(const Transform& transform, float& ndcX, float& ndcY);
 };

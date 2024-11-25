@@ -11,18 +11,21 @@ class Enemy : public GameObject {
 public:
     Enemy(GameObject* parent);
     ~Enemy();
+
     void Initialize() override;
     void Update() override;
     void Draw() override;
     void Release() override;
 
     // Attribute management
-    int GetAttribute() const;
-    void SetAttribute(int attribute);
+    Attribute* GetActiveAttribute() const;
+    void SetAttribute(Attribute* attribute);
 
     // Combat mechanics
-    void TakeDamage(int amount);
-    void Attack(Player& player);
+    void AttackPlayer(); // Use CombatSystem
+    void ReceiveAttack(int damage); // Renamed from TakeDamage
+
+    int GetAttackPower() const; // Declare GetAttackPower
 
 protected:
     // Attributes
@@ -30,12 +33,12 @@ protected:
     int attackPower;
     int defense;
     int speed;
-    int attribute; // Enemy's attribute
+    Attribute* activeAttribute_;
 
     // AI and state management
     void HandleAI();
     enum State {
-        Idle_, Run_, Attack_, Hit_, Death_
+        Idle_, Run_, Jump_, Attack_, Hit_, Death_
     };
     State currentState;
 
@@ -48,12 +51,21 @@ protected:
     float patrolStartX;
     float patrolEndX;
     float chaseDistance;
-    float attackRange; // Attack range for the enemy
+    float attackRange;
     float shootingRange;
     float shootingCooldown;
-
+    float attackCooldown; // Add attack cooldown
+  float attackTimer; // Add attack timer
     // Direction handling
     bool facingRight;
+
+    // Image handles
+    int IdleImg;
+    int RunImg;
+    int JumpImg;
+    int AttackImg;
+    int HitImg;
+    int DeathImg;
 
     // Player reference
     Player* player;
@@ -65,13 +77,5 @@ protected:
     // AI behaviors
     void Patrol();
     void Chase(Player& player);
-    void AttackPlayer(Player& player);
     void Shoot(Player& player);
-
-private:
-    int IdleImg;
-    int RunImg;
-    int AttackImg;
-    int HitImg;
-    int DeathImg;
 };

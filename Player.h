@@ -3,6 +3,7 @@
 #include "Animation.h"
 #include "PowerUp.h"
 #include "Attributes.h"
+#include "CombatSystem.h"
 #include "Enemy.h"
 #include <string>
 #include <vector>
@@ -11,46 +12,63 @@ class Player : public GameObject {
 public:
     Player(GameObject* parent);
     ~Player();
+
     void Initialize() override;
     void Update() override;
     void Draw() override;
     void Release() override;
+
+    // Power-ups
     void ApplyPowerUp(int powerUpImageHandle);
     void CollectPowerUp(PowerUp* powerUp);
+
+    // Updates
     void UpdateScore(int points);
     void UpdateLevel(int newLevel);
+
+    // Getters
     const std::string& GetName() const;
-    int GetAttribute() const;
+    Attribute* GetAttribute() const;
     int GetHealth() const;
     int GetScore() const;
     int GetLevel() const;
+    int GetAttackPower() const;
+
+    // Setters
+    void SetName(const std::string& playerName);
+    void SetHealth(int health);
 
     // Attribute management
-    void AddAttribute(int attribute);
-    void SetActiveAttributes(const std::vector<int>& attributes);
-    const std::vector<int>& GetActiveAttributes() const;
+    void AddAttribute(Attribute* attribute);
+    void SetActiveAttributes(const std::vector<Attribute*>& attributes);
+    const std::vector<Attribute*>& GetActiveAttributes() const;
 
     // Combat mechanics
-    void Attack(Enemy& enemy);
+    void PerformAttack();
     void TakeDamage(int amount);
 
-private:
+ // Public states for accessibility
     enum State {
-        Idle_, Run_, Jump_, Fall_, Hit_, Attack_, Dash_, Death_
+        Idle_=0, Run_, Jump_, Fall_, Hit_, Attack_, Dash_, Death_
     };
-    void HandleInput();
-    void ApplyGravity();
-    void CheckLanding();
-    void Idle();
+
+    // State management and animations
+    void SetAnimationState(State newState);
+
+   
+    // Movement and combat methods
     void Run();
     void Jump();
     void Fall();
-    void Attack();
     void Dash();
-    void Hit(int amount);
     void Death();
-    void SetAnimationState(State newState);
+    void ApplyGravity();
+    void HandleInput();
+    void CheckLanding();
 
+    //void Hit();
+
+private:
     State currentState;
     std::string name;
     int IdleImg;
@@ -65,20 +83,23 @@ private:
     int score;
     int level;
     int activePowerUp;
-    int attackPower;  // Added attack power
+    int attackPower;
     Animation* baseAnimation;
     std::vector<Animation*> overlayAnimations;
-    std::vector<int> activeAttributes; // Active attributes for the stage
-    std::vector<int> acquiredAttributes; // All acquired attributes
+    std::vector<Attribute*> activeAttributes;
+    std::vector<Attribute*> acquiredAttributes;
 
-    void SetName(const std::string& playerName);
-    void SetHealth(int health);
-    bool isGrounded; // Flag to check if the player is on the ground
-    float groundLevel; // Define the ground level
-    bool facingRight; // Track the player's direction
-    float speed; // Movement speed
-    float jumpVelocity; // Track the player's jump velocity
-    float jumpForce; // Jump force
-    float gravity; // Gravity
-    float dashSpeed; // Dash speed
+    Enemy* enemy;
+    bool deathAnimationComplete;
+    bool isGrounded;
+    float groundLevel;
+    bool facingRight;
+    float speed;
+    float jumpVelocity;
+    float jumpForce;
+    float gravity;
+    float dashSpeed;
+    float attackTimer;
+    const float attackCooldown;
+    float stateCooldown;
 };

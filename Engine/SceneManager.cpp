@@ -1,6 +1,7 @@
 #include "sceneManager.h"
 
-#include "../TestScene.h"
+#include "../TitleScene.h"
+#include"../AttributeSelectionScreen.h"
 #include "Model.h"
 #include "Image.h"
 #include "Audio.h"
@@ -16,9 +17,9 @@ SceneManager::SceneManager(GameObject * parent)
 void SceneManager::Initialize()
 {
 	//最初のシーンを準備
-	currentSceneID_ = SCENE_ID_TEST;
+	currentSceneID_ = SCENE_ID_TITLE;
 	nextSceneID_ = currentSceneID_;
-	Instantiate<TestScene>(this);
+	Instantiate<TitleScene>(this);
 }
 
 //更新
@@ -38,7 +39,10 @@ void SceneManager::Update()
 		//次のシーンを作成
 		switch (nextSceneID_)
 		{
-		case SCENE_ID_TEST: Instantiate<TestScene>(this); break;
+		case SCENE_ID_TITLE: Instantiate<TitleScene>(this); break;
+		case SCENE_ID_ATTRIBUTE_SELECT: Instantiate<AttributeSelectionScreen>(this); break;
+		case SCENE_ID_PLAY: Instantiate<TitleScene>(this); break;
+		case SCENE_ID_GAMEOVER: Instantiate<TitleScene>(this); break;
 
 		}
 		Audio::Initialize();
@@ -60,4 +64,9 @@ void SceneManager::Release()
 void SceneManager::ChangeScene(SCENE_ID next)
 {
 	nextSceneID_ = next;
+}
+// Handle Attribute Selection 
+void SceneManager::OnAttributeChosen(Attribute::Type type) 
+{ 
+	selectedAttribute_ = type; ChangeScene(SCENE_ID_PLAY); 
 }

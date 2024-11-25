@@ -24,6 +24,9 @@
       <UniqueIdentifier>{47a6a3f5-8cfd-436b-8d58-beccd108f3f3}</UniqueIdentifier>
       <Extensions>hlsl</Extensions>
     </Filter>
+    <Filter Include="リソース ファイル\Attributes">
+      <UniqueIdentifier>{ffcf22ad-30f0-4e9b-a688-e9f61284e454}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\BoxCollider.cpp">
@@ -80,7 +83,7 @@
     <ClCompile Include="Engine\Transform.cpp">
       <Filter>01Engine\GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="Engine\Audio.cpp">
       <Filter>01Engine\ResourceManager</Filter>
     </ClCompile>
@@ -101,6 +104,37 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Attributes.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="AttributeSelectionScreen.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="DarkAttribute.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="EarthAttribute.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="ElectricAttribute.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="FireAttribute.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="IceAttribute.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="WaterAttribute.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="WindAttribute.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="AttributeFactory.cpp">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClCompile>
+    <ClCompile Include="CombatSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\BoxCollider.h">
@@ -157,7 +191,7 @@
     <ClInclude Include="Engine\Transform.h">
       <Filter>01Engine\GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="TestScene.h" />
+    <ClInclude Include="TitleScene.h" />
     <ClInclude Include="Engine\Audio.h">
       <Filter>01Engine\ResourceManager</Filter>
     </ClInclude>
@@ -178,7 +212,37 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="Enemy.h" />
-    <ClInclude Include="Attributes.h" />
+    <ClInclude Include="Attributes.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="AttributeSelectionScreen.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="DarkAttribute.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="EarthAttribute.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="ElectricAttribute.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="FireAttribute.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="IceAttribute.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="WaterAttribute.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="WindAttribute.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="AttributeFactory.h">
+      <Filter>リソース ファイル\Attributes</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\Simple2D.hlsl">

@@ -1,12 +1,30 @@
 #pragma once
+#include "Engine/Image.h"
+#include"Animation.h"
 
-enum Attributes {
-    ATTR_FIRE = 0,
-    ATTR_WATER,
-    ATTR_WIND,
-    ATTR_EARTH,
-    ATTR_ELECTRIC,
-    ATTR_LIGHT,
-    ATTR_DARK
-    // Add other attributes as needed
+class Attribute {
+public:
+    enum Type {
+        FIRE,
+        WATER,
+        WIND,
+        EARTH,
+        ELECTRIC,
+        ICE,
+        DARK
+        // Add other attributes as needed
+    };
+
+    explicit Attribute(Type type);
+    virtual ~Attribute();
+
+    Type GetType() const;
+    virtual int GetImageHandle() const;
+    virtual void SetAttackAnimation(Animation* animation) const = 0;
+
+protected:
+    Type type_;
+    int imageHandle_;
+
+    virtual void LoadImage() = 0;
 };
