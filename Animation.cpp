@@ -1,14 +1,18 @@
 #include "Animation.h"
 #include "Engine/Image.h"
 #include "Engine/Direct3D.h"
+#include "Engine/Debug.h" // For debug logging
 
-Animation::Animation(int frameWidth, int frameHeight, int frameCount, float frameDuration, int imageHandle, int startFrame, bool loop_)
-    : frameWidth(frameWidth), frameHeight(frameHeight), frameCount(frameCount), frameDuration(frameDuration), currentTime(0), currentFrame(startFrame), startFrame(startFrame), imageHandle(imageHandle), loop(loop_) {
+Animation::Animation(int frameCount, float frameDuration, int imageHandle, int startFrame, bool loop)
+    : frameCount(frameCount), frameDuration(frameDuration), currentTime(0), currentFrame(startFrame), startFrame(startFrame), imageHandle(imageHandle), loop(loop) {
     CalculateFrames();
 }
 
 void Animation::Update() {
     currentTime += 1.0f / 60.0f; // Assuming a 60 FPS update rate
+
+    Debug::Log("Before Update - Current Frame: " + std::to_string(currentFrame) + " | Current Time: " + std::to_string(currentTime) + " | Frame Duration: " + std::to_string(frameDuration));
+
     if (currentTime >= frameDuration) {
         currentTime -= frameDuration;
         if (loop) {
@@ -19,6 +23,8 @@ void Animation::Update() {
                 currentFrame++;
             }
         }
+
+        Debug::Log("After Frame Update - Current Frame: " + std::to_string(currentFrame) + " | Current Time: " + std::to_string(currentTime));
     }
 
     for (auto anim : overlayAnimations) {
@@ -53,14 +59,12 @@ void Animation::Draw(const Transform& transform, bool facingRight) {
     }
 }
 
-void Animation::SetAnimation(int frameWidth, int frameHeight, int frameCount, float frameDuration, int imageHandle, int startFrame, bool loop_) {
-    this->frameWidth = frameWidth;
-    this->frameHeight = frameHeight;
+void Animation::SetAnimation(int frameCount, float frameDuration, int imageHandle, int startFrame, bool loop) {
     this->frameCount = frameCount;
     this->frameDuration = frameDuration;
     this->imageHandle = imageHandle;
     this->startFrame = startFrame;
-    this->loop = loop_;
+    this->loop = loop;
     currentFrame = startFrame;
     currentTime = 0;
     CalculateFrames();
@@ -78,12 +82,16 @@ void Animation::CalculateFrames() {
     frames.clear();
     int imageWidth = Image::GetWidth(imageHandle);
     int imageHeight = Image::GetHeight(imageHandle);
+    frameWidth = imageWidth / frameCount; // Automatically calculate frame width
+    frameHeight = imageHeight; // Assuming a single row of frames
+
     for (int i = startFrame; i < startFrame + frameCount; ++i) {
-        int x = (i % (imageWidth / frameWidth)) * frameWidth;
-        int y = (i / (imageWidth / frameWidth)) * frameHeight;
+        int x = i * frameWidth;
+        int y = 0;
         frames.push_back({ x, y, x + frameWidth, y + frameHeight });
     }
 }
+
 bool Animation::IsAnimationComplete() const {
     return !loop && currentFrame == startFrame + frameCount - 1;
 }

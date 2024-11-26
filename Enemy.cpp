@@ -36,13 +36,13 @@ void Enemy::Initialize() {
     assert(JumpImg >= 0);
     AttackImg = Image::Load("Enemy_Shadow0/Attack1.png");
     assert(AttackImg >= 0);
-  //  HitImg = Image::Load("Enemy_Shadow0/Hit.png");
-    //assert(HitImg >= 0);
+ //   HitImg = Image::Load("Enemy_Shadow0/Hit.png");
+  //  assert(HitImg >= 0);
     DeathImg = Image::Load("Enemy_Shadow0/Death.png");
     assert(DeathImg >= 0);
 
     transform_.position_ = { 600.0f, 500.0f, 0.0f };
-    baseAnimation = new Animation(32, 64, 6, 0.1f, IdleImg);
+    baseAnimation = new Animation(6, 0.1f, IdleImg);
 
     patrolStartX = 600.0f;
     patrolEndX = 800.0f;
@@ -102,11 +102,11 @@ bool Enemy::PlayerInAttackRange() {
 void Enemy::ReceiveAttack(int damage) {
     health -= damage;
     if (health <= 0) {
-        KillMe();  // Set the enemy as dead
         SetAnimationState(Death_);
+        // The KillMe call should be handled after animation completion, similar to Player
     }
     else {
-      //  Hit();
+        SetAnimationState(Hit_);
     }
 }
 
@@ -182,17 +182,16 @@ void Enemy::Shoot(Player& player) {
     }
 }
 
-
 void Enemy::SetAnimationState(State newState) {
     if (currentState != newState) {
         currentState = newState;
 
         switch (newState) {
         case Idle_:
-            baseAnimation->SetAnimation(32, 64, 6, 0.1f, IdleImg);
+            baseAnimation->SetAnimation(6, 0.1f, IdleImg);
             break;
         case Run_:
-            baseAnimation->SetAnimation(32, 64, 4, 0.08f, RunImg);
+            baseAnimation->SetAnimation(4, 0.08f, RunImg);
             break;
         case Attack_:
             if (activeAttribute_) {
@@ -200,10 +199,10 @@ void Enemy::SetAnimationState(State newState) {
             }
             break;
         case Hit_:
-            baseAnimation->SetAnimation(48, 48, 4, 0.12f, HitImg);
+            baseAnimation->SetAnimation(4, 0.12f, HitImg, 0, false);
             break;
         case Death_:
-            baseAnimation->SetAnimation(256, 30, 11, 0.15f, DeathImg, false); // Play once, no loop
+            baseAnimation->SetAnimation(11, 0.15f, DeathImg, 0, false); // Play once, no loop
             break;
         }
     }

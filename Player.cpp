@@ -10,7 +10,7 @@
 Player::Player(GameObject* parent)
     : GameObject(parent, "Player"),
     name(""),
-    health(100),
+    health(10),
     score(0),
     level(1),
     activePowerUp(-1),
@@ -62,11 +62,11 @@ void Player::Initialize() {
     assert(AttackImg >= 0);
     DashImg = Image::Load("Player/Dash.png");
     assert(DashImg >= 0);
-    DeathImg = Image::Load("Player/Death.png");
+    DeathImg = Image::Load("Player/Death_Test.png");
     assert(DeathImg >= 0);
 
     transform_.position_ = { 50.0f, groundLevel, 0.0f };
-    baseAnimation = new Animation(48, 48, 12, 0.055f, IdleImg);
+    baseAnimation = new Animation(12, 0.055f, IdleImg);
 
     enemy = dynamic_cast<Enemy*>(FindObject("Enemy"));  // Initialize enemy pointer
 }
@@ -186,17 +186,17 @@ void Player::SetAnimationState(State newState) {
 
         switch (newState) {
         case Idle_:
-            baseAnimation->SetAnimation(48, 48, 12, 0.055f, IdleImg);
+            baseAnimation->SetAnimation(12, 0.055f, IdleImg);
             break;
         case Run_:
-            baseAnimation->SetAnimation(48, 48, 8, 0.075f, RunImg);
+            baseAnimation->SetAnimation(8, 0.075f, RunImg);
             break;
         case Jump_:
-            baseAnimation->SetAnimation(48, 48, 4, 0.15f, JumpImg);
+            baseAnimation->SetAnimation(4, 0.15f, JumpImg, 0, false);
             isGrounded = false;
             break;
         case Fall_:
-            baseAnimation->SetAnimation(48, 48, 4, 0.1f, FallImg);
+            baseAnimation->SetAnimation(4, 0.1f, FallImg);
             break;
         case Attack_:
             if (!activeAttributes.empty()) {
@@ -204,13 +204,13 @@ void Player::SetAnimationState(State newState) {
             }
             break;
         case Dash_:
-            baseAnimation->SetAnimation(220, 56, 5, 0.07f, DashImg);
+            baseAnimation->SetAnimation(5, 0.07f, DashImg);
             break;
         case Hit_:
-            baseAnimation->SetAnimation(48, 48, 4, 0.1f, HitImg);
+            baseAnimation->SetAnimation(4, 0.1f, HitImg, 0, false);
             break;
         case Death_:
-            baseAnimation->SetAnimation(76, 48, 10, 0.2f, DeathImg, false); // Play once, no loop
+            baseAnimation->SetAnimation(10, 0.055f, DeathImg, 0, false); // Play once, no loop
             break;
         }
     }
@@ -251,10 +251,12 @@ void Player::TakeDamage(int amount) {
     if (health > 0) {
         SetAnimationState(Hit_);
     }
-    else {
+    else{
         SetAnimationState(Death_);
-        // The KillMe call is now handled in the Update method after animation completion
     }
+        
+        // The KillMe call is now handled in the Update method after animation completion
+    
 }
 
 void Player::PerformAttack() {
@@ -264,9 +266,9 @@ void Player::PerformAttack() {
     }
 }
 
-void Player::Death() {
-    SetAnimationState(Death_);
-}
+//void Player::Death() {
+//    SetAnimationState(Death_);
+//}
 
 const std::string& Player::GetName() const {
     return name;
