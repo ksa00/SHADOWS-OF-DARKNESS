@@ -13,8 +13,8 @@ TitleScene::TitleScene(GameObject* parent)
 void TitleScene::Initialize() {
     // Initialize other game objects if needed
     Instantiate<Player>(this);
-	Instantiate<Enemy>(this);
-	Instantiate<Stage>(this);
+	//Instantiate<Enemy>(this);
+	//Instantiate<Stage>(this);
 }
 
 void TitleScene::Update() {

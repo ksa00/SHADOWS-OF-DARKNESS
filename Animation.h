@@ -1,19 +1,23 @@
 #pragma once
-#include"Engine/Image.h"
 #include <vector>
+#include "Engine/Image.h"
+
 class Animation {
 public:
-    Animation(int frameCount, float frameDuration, int imageHandle, int startFrame = 0, bool loop = true);
+    Animation(int totalFrameCount, float frameDuration, int imageHandle, int startFrame = 0, int subsetFrameCount = -1, bool loop = true);
+
     void Update();
     void Draw(const Transform& transform, bool facingRight);
-    void SetAnimation(int frameCount, float frameDuration, int imageHandle, int startFrame = 0, bool loop = true);
+    void SetAnimation(int totalFrameCount, float frameDuration, int imageHandle, int startFrame = 0, int subsetFrameCount = -1, bool loop = true);
     void AddOverlayAnimation(Animation* animation);
     void ClearOverlayAnimations();
     bool IsAnimationComplete() const;
 
 private:
     void CalculateFrames();
-    int frameCount;
+
+    int totalFrameCount;
+    int subsetFrameCount; // Number of frames in the subset to animate
     float frameDuration;
     float currentTime;
     int currentFrame;

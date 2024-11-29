@@ -61,7 +61,6 @@ public:
     void Jump();
     void Fall();
     void Dash();
-    void Death();
     void ApplyGravity();
     void HandleInput();
     void CheckLanding();
@@ -98,8 +97,8 @@ private:
     float jumpVelocity;
     float jumpForce;
     float gravity;
-    float dashSpeed;
+    float distancePerFrame;
+    float totalDashDistance;
     float attackTimer;
     const float attackCooldown;
-    float stateCooldown;
 };

@@ -18,6 +18,12 @@ Enemy::Enemy(GameObject* parent)
     AttackImg = -1;
     HitImg = -1;
     DeathImg = -1;
+    patrolStartX = 600.0f;
+    patrolEndX = 800.0f;
+    chaseDistance = 200.0f;
+    attackRange = 50.0f;
+    shootingRange = 150.0f;
+    shootingCooldown = 1.0f;
 }
 
 Enemy::~Enemy() {
@@ -44,25 +50,24 @@ void Enemy::Initialize() {
     transform_.position_ = { 600.0f, 500.0f, 0.0f };
     baseAnimation = new Animation(6, 0.1f, IdleImg);
 
-    patrolStartX = 600.0f;
-    patrolEndX = 800.0f;
-    chaseDistance = 200.0f;
-    attackRange = 50.0f;
-    shootingRange = 150.0f;
-    shootingCooldown = 1.0f;
+   
 
     player = dynamic_cast<Player*>(FindObject("Player"));
 }
-
 void Enemy::Update() {
+    static int updateCount = 0; // Track how many times Update is called
+    updateCount++;
+
     HandleAI();
     attackTimer -= 1.0f / 60.0f; // Assuming 60 FPS
 
+    Debug::Log("Enemy Update Call #" + std::to_string(updateCount) + "\n"); // Log each update call
     baseAnimation->Update();
     for (auto anim : overlayAnimations) {
         anim->Update();
     }
 }
+
 
 void Enemy::Draw() {
     baseAnimation->Draw(transform_, facingRight);

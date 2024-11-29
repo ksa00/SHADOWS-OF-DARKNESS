@@ -9,6 +9,7 @@
 
 Player::Player(GameObject* parent)
     : GameObject(parent, "Player"),
+    currentState(Death_),
     name(""),
     health(10),
     score(0),
@@ -24,10 +25,8 @@ Player::Player(GameObject* parent)
     jumpVelocity(0.0f),
     jumpForce(20.0f),
     gravity(1.5f),
-    dashSpeed(20.0f),
     attackTimer(0.0f),
-    attackCooldown(0.3f), // Cooldown between attacks (in seconds)
-    stateCooldown(0.0f) // Initialize state cooldown
+    attackCooldown(0.3f) // Cooldown between attacks (in seconds)
 {
     enemy = nullptr;
     IdleImg = -1;
@@ -38,6 +37,9 @@ Player::Player(GameObject* parent)
     AttackImg = -1;
     DashImg = -1;
     DeathImg = -1;
+    totalDashDistance = 200.0f; // Example distance for a dash
+    // Example frame count for the dash animation
+    distancePerFrame = totalDashDistance / 10; // Calculate distance per frame based on total dash distance and frame count
 }
 
 Player::~Player() {
@@ -67,11 +69,13 @@ void Player::Initialize() {
 
     transform_.position_ = { 50.0f, groundLevel, 0.0f };
     baseAnimation = new Animation(12, 0.055f, IdleImg);
-
-    enemy = dynamic_cast<Enemy*>(FindObject("Enemy"));  // Initialize enemy pointer
+    enemy = dynamic_cast<Enemy*>(FindObject("Enemy")); // Initialize enemy pointer
 }
 
 void Player::Update() {
+    static int updateCount = 0;
+    updateCount++;
+
     if (!IsDead()) {
         HandleInput();
         ApplyGravity();
@@ -86,8 +90,7 @@ void Player::Update() {
     }
 
     attackTimer -= 1.0f / 60.0f; // Assuming 60 FPS
-    stateCooldown -= 1.0f / 60.0f; // Update state cooldown
-
+    Debug::Log("Player Update Call #" + std::to_string(updateCount)); // Log each update call
     baseAnimation->Update();
     for (auto anim : overlayAnimations) {
         anim->Update();
@@ -113,7 +116,7 @@ void Player::HandleInput() {
     bool isRunning = Input::IsKey(DIK_A) || Input::IsKey(DIK_D);
     bool isJumping = Input::IsKeyDown(DIK_W);
     bool isDashing = Input::IsKeyDown(DIK_LSHIFT);
-    bool isAttacking = Input::IsKey(DIK_SPACE);
+    bool isAttacking = Input::IsKeyDown(DIK_SPACE);
 
     if (isRunning && isJumping) {
         Jump();
@@ -179,9 +182,8 @@ void Player::SetAnimationState(State newState) {
         return;
     }
 
-    if (currentState != newState && stateCooldown <= 0.0f) {
+    if (currentState != newState) {
         currentState = newState;
-        stateCooldown = 0.2f; // Set cooldown to prevent rapid state changes
         Debug::Log("Changing state to " + std::to_string(newState)); // Debug log
 
         switch (newState) {
@@ -204,13 +206,13 @@ void Player::SetAnimationState(State newState) {
             }
             break;
         case Dash_:
-            baseAnimation->SetAnimation(5, 0.07f, DashImg);
+            baseAnimation->SetAnimation(10, 0.25f, DashImg, 0, 5, false);
             break;
         case Hit_:
             baseAnimation->SetAnimation(4, 0.1f, HitImg, 0, false);
             break;
         case Death_:
-            baseAnimation->SetAnimation(10, 0.055f, DeathImg, 0, false); // Play once, no loop
+            baseAnimation->SetAnimation(10, 0.055f, DeathImg, false); // Play once, no loop
             break;
         }
     }
@@ -233,12 +235,9 @@ void Player::Fall() {
 }
 
 void Player::Dash() {
-    if (facingRight) {
-        transform_.position_.x += dashSpeed;
-    }
-    else {
-        transform_.position_.x -= dashSpeed;
-    }
+   
+    float dashMovement = distancePerFrame;
+    transform_.position_.x += dashMovement * (facingRight ? 1 : -1);
     SetAnimationState(Dash_);
 }
 
@@ -251,24 +250,18 @@ void Player::TakeDamage(int amount) {
     if (health > 0) {
         SetAnimationState(Hit_);
     }
-    else{
+    else {
         SetAnimationState(Death_);
     }
-        
-        // The KillMe call is now handled in the Update method after animation completion
-    
+    // The KillMe call is now handled in the Update method after animation completion
 }
 
 void Player::PerformAttack() {
-    enemy = dynamic_cast<Enemy*>(FindObject("Enemy"));  // Ensure enemy is retrieved
+    enemy = dynamic_cast<Enemy*>(FindObject("Enemy")); // Ensure enemy is retrieved
     if (enemy) {
-        CombatSystem::PerformAttack(this, enemy);  // Use CombatSystem to handle the attack
+        CombatSystem::PerformAttack(this, enemy); // Use CombatSystem to handle the attack
     }
 }
-
-//void Player::Death() {
-//    SetAnimationState(Death_);
-//}
 
 const std::string& Player::GetName() const {
     return name;
