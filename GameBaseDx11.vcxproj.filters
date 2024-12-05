@@ -135,6 +135,7 @@
       <Filter>リソース ファイル\Attributes</Filter>
     </ClCompile>
     <ClCompile Include="CombatSystem.cpp" />
+    <ClCompile Include="Camera2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\BoxCollider.h">
@@ -243,6 +244,7 @@
       <Filter>リソース ファイル\Attributes</Filter>
     </ClInclude>
     <ClInclude Include="CombatSystem.h" />
+    <ClInclude Include="Camera2D.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\Simple2D.hlsl">

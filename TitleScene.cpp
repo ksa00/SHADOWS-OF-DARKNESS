@@ -1,5 +1,6 @@
 #include "TitleScene.h"
 #include"Player.h"
+#include"Camera2D.h"
 #include"Stage.h"
 #include"Enemy.h"
 #include "Engine/SceneManager.h"
@@ -12,6 +13,7 @@ TitleScene::TitleScene(GameObject* parent)
 
 void TitleScene::Initialize() {
     // Initialize other game objects if needed
+    Instantiate<Camera2D>(this);
     Instantiate<Player>(this);
 	//Instantiate<Enemy>(this);
 	//Instantiate<Stage>(this);

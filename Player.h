@@ -97,7 +97,6 @@ private:
     float jumpVelocity;
     float jumpForce;
     float gravity;
-    float distancePerFrame;
     float totalDashDistance;
     float attackTimer;
     const float attackCooldown;

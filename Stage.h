@@ -1,18 +1,23 @@
-#pragma once
+#ifndef STAGE_H
+#define STAGE_H
+
 #include "Engine/GameObject.h"
-#include "Engine/Image.h"
+#include <vector>
+#include <string>
 
 class Stage : public GameObject {
 public:
     Stage(GameObject* parent);
     ~Stage();
+
     void Initialize() override;
     void Update() override;
     void Draw() override;
     void Release() override;
 
-
 private:
-    int tilesetImage_; // Handle for the tileset image
-
+    std::vector<std::vector<int>> mapData_;
+    void LoadStageData(const std::string& fileName);
 };
+
+#endif // STAGE_H

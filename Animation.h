@@ -6,6 +6,8 @@ class Animation {
 public:
     Animation(int totalFrameCount, float frameDuration, int imageHandle, int startFrame = 0, int subsetFrameCount = -1, bool loop = true);
 
+ 
+
     void Update();
     void Draw(const Transform& transform, bool facingRight);
     void SetAnimation(int totalFrameCount, float frameDuration, int imageHandle, int startFrame = 0, int subsetFrameCount = -1, bool loop = true);

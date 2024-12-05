@@ -4,7 +4,15 @@
 #include "Engine/Debug.h"
 
 Animation::Animation(int totalFrameCount, float frameDuration, int imageHandle, int startFrame, int subsetFrameCount, bool loop)
-    : totalFrameCount(totalFrameCount), frameDuration(frameDuration), currentTime(0), currentFrame(startFrame), startFrame(startFrame), imageHandle(imageHandle), loop(loop) {
+    : totalFrameCount(totalFrameCount),
+    frameDuration(frameDuration),
+    currentTime(0),
+    currentFrame(startFrame),
+    startFrame(startFrame),
+    imageHandle(imageHandle),
+    loop(loop),
+    frameHeight(0),
+    frameWidth(0) {
     // Ensure subsetFrameCount is valid
     if (subsetFrameCount == -1 || subsetFrameCount <= 0) {
         this->subsetFrameCount = totalFrameCount - startFrame; // Default to the remaining frames
@@ -12,7 +20,7 @@ Animation::Animation(int totalFrameCount, float frameDuration, int imageHandle, 
     else {
         this->subsetFrameCount = subsetFrameCount;
     }
-  ///  CalculateFrames();
+    CalculateFrames();
 }
 
 void Animation::Update() {
@@ -50,11 +58,19 @@ void Animation::Draw(const Transform& transform, bool facingRight) {
         return;
     }
 
-    int frameX = frames[currentFrame - startFrame].left;
-    int frameY = frames[currentFrame - startFrame].top;
+    int frameIndex = currentFrame - startFrame;
+    if (frameIndex < 0 || frameIndex >= static_cast<int>(frames.size())) {
+        Debug::Log("Frame index out of bounds: " + std::to_string(frameIndex) + "\n");
+        return;
+    }
+
+    int frameX = frames[frameIndex].left;
+    int frameY = frames[frameIndex].top;
 
     Transform ndcTransform = transform;
     Image::ConvertToNDC(transform, ndcTransform.position_.x, ndcTransform.position_.y);
+
+    Debug::Log("Drawing Frame - Current Frame: " + std::to_string(currentFrame) + " | Position: (" + std::to_string(ndcTransform.position_.x) + ", " + std::to_string(ndcTransform.position_.y) + ") | Facing Right: " + std::to_string(facingRight) + "\n");
 
     if (facingRight) {
         Image::SetRect(imageHandle, frameX, frameY, frameWidth, frameHeight);

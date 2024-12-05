@@ -137,6 +137,7 @@
     <ClCompile Include="AttributeFactory.cpp" />
     <ClCompile Include="Attributes.cpp" />
     <ClCompile Include="AttributeSelectionScreen.cpp" />
+    <ClCompile Include="Camera2D.cpp" />
     <ClCompile Include="CombatSystem.cpp" />
     <ClCompile Include="DarkAttribute.cpp" />
     <ClCompile Include="EarthAttribute.cpp" />
@@ -179,6 +180,7 @@
     <ClInclude Include="AttributeFactory.h" />
     <ClInclude Include="Attributes.h" />
     <ClInclude Include="AttributeSelectionScreen.h" />
+    <ClInclude Include="Camera2D.h" />
     <ClInclude Include="CombatSystem.h" />
     <ClInclude Include="DarkAttribute.h" />
     <ClInclude Include="EarthAttribute.h" />

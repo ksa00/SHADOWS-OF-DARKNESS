@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Camera2D.h"
 #include "Enemy.h"
 #include "CombatSystem.h"
 #include "Engine/Image.h"
@@ -17,7 +18,7 @@ Player::Player(GameObject* parent)
     activePowerUp(-1),
     attackPower(10),
     baseAnimation(nullptr),
-    deathAnimationComplete(false), // Initialize flag to false
+    deathAnimationComplete(false),
     isGrounded(true),
     groundLevel(500.0f),
     facingRight(true),
@@ -26,8 +27,7 @@ Player::Player(GameObject* parent)
     jumpForce(20.0f),
     gravity(1.5f),
     attackTimer(0.0f),
-    attackCooldown(0.3f) // Cooldown between attacks (in seconds)
-{
+    attackCooldown(0.3f) {
     enemy = nullptr;
     IdleImg = -1;
     RunImg = -1;
@@ -37,9 +37,7 @@ Player::Player(GameObject* parent)
     AttackImg = -1;
     DashImg = -1;
     DeathImg = -1;
-    totalDashDistance = 200.0f; // Example distance for a dash
-    // Example frame count for the dash animation
-    distancePerFrame = totalDashDistance / 10; // Calculate distance per frame based on total dash distance and frame count
+    totalDashDistance = 100.0f;
 }
 
 Player::~Player() {
@@ -69,7 +67,7 @@ void Player::Initialize() {
 
     transform_.position_ = { 50.0f, groundLevel, 0.0f };
     baseAnimation = new Animation(12, 0.055f, IdleImg);
-    enemy = dynamic_cast<Enemy*>(FindObject("Enemy")); // Initialize enemy pointer
+    enemy = dynamic_cast<Enemy*>(FindObject("Enemy"));
 }
 
 void Player::Update() {
@@ -80,27 +78,54 @@ void Player::Update() {
         HandleInput();
         ApplyGravity();
         CheckLanding();
+
+        if (currentState == Dash_ && baseAnimation->IsAnimationComplete()) {
+            Debug::Log("Dash animation complete, transitioning to Idle state");
+            SetAnimationState(Idle_);
+        }
     }
     else if (currentState == Death_ && !deathAnimationComplete) {
-        // Check if the death animation has completed
         deathAnimationComplete = baseAnimation->IsAnimationComplete();
         if (deathAnimationComplete) {
             KillMe();
         }
     }
 
-    attackTimer -= 1.0f / 60.0f; // Assuming 60 FPS
-    Debug::Log("Player Update Call #" + std::to_string(updateCount)); // Log each update call
+    attackTimer -= 1.0f / 60.0f;
+    Debug::Log("Player Update Call #" + std::to_string(updateCount));
+
+    // Update the camera to follow the player
+    Camera2D* cam = dynamic_cast<Camera2D*>(FindObject("Camera2D"));
+    if (cam) {
+        Debug::Log("Camera2D object found.");
+        XMFLOAT2 playerPos = { transform_.position_.x, transform_.position_.y };
+        cam->SetCameraPos(playerPos);
+    }
+    else {
+        Debug::Log("Camera2D object not found.");
+    }
+
     baseAnimation->Update();
     for (auto anim : overlayAnimations) {
         anim->Update();
     }
 }
-
 void Player::Draw() {
-    baseAnimation->Draw(transform_, facingRight);
+    Camera2D* cam = dynamic_cast<Camera2D*>(FindObject("Camera2D"));
+    XMFLOAT2 cameraPosition(0.0f, 0.0f);
+    if (cam != nullptr) {
+        cameraPosition = cam->GetScreenPosFromWorldPos({ transform_.position_.x, transform_.position_.y });
+    }
+
+    float drawX = transform_.position_.x - cameraPosition.x; // Convert world position to screen position
+    float drawY = transform_.position_.y - cameraPosition.y; // Convert world position to screen position
+
+    Transform drawTransform;
+    drawTransform.position_ = { drawX, drawY, transform_.position_.z }; // Adjust the Z-axis if needed
+    baseAnimation->Draw(drawTransform, facingRight);
+
     for (auto anim : overlayAnimations) {
-        anim->Draw(transform_, facingRight);
+        anim->Draw(drawTransform, facingRight);
     }
 }
 
@@ -116,7 +141,7 @@ void Player::HandleInput() {
     bool isRunning = Input::IsKey(DIK_A) || Input::IsKey(DIK_D);
     bool isJumping = Input::IsKeyDown(DIK_W);
     bool isDashing = Input::IsKeyDown(DIK_LSHIFT);
-    bool isAttacking = Input::IsKeyDown(DIK_SPACE);
+    bool isAttacking = Input::IsKey(DIK_SPACE);
 
     if (isRunning && isJumping) {
         Jump();
@@ -124,7 +149,6 @@ void Player::HandleInput() {
     }
     else if (isRunning && isDashing) {
         Dash();
-        Run();
     }
     else if (isRunning && isAttacking && attackTimer <= 0.0f) {
         PerformAttack();
@@ -144,7 +168,7 @@ void Player::HandleInput() {
         PerformAttack();
         attackTimer = attackCooldown;
     }
-    else if (isGrounded) {
+    else if (isGrounded && currentState != Dash_) {
         SetAnimationState(Idle_);
     }
 
@@ -184,7 +208,7 @@ void Player::SetAnimationState(State newState) {
 
     if (currentState != newState) {
         currentState = newState;
-        Debug::Log("Changing state to " + std::to_string(newState)); // Debug log
+        Debug::Log("Changing state to " + std::to_string(newState));
 
         switch (newState) {
         case Idle_:
@@ -206,7 +230,7 @@ void Player::SetAnimationState(State newState) {
             }
             break;
         case Dash_:
-            baseAnimation->SetAnimation(10, 0.25f, DashImg, 0, 5, false);
+            baseAnimation->SetAnimation(10, 0.07f, DashImg, 0, 5, false); // Using 5 frames for dash animation
             break;
         case Hit_:
             baseAnimation->SetAnimation(4, 0.1f, HitImg, 0, false);
@@ -235,10 +259,11 @@ void Player::Fall() {
 }
 
 void Player::Dash() {
-   
-    float dashMovement = distancePerFrame;
-    transform_.position_.x += dashMovement * (facingRight ? 1 : -1);
-    SetAnimationState(Dash_);
+    if (currentState != Dash_) {
+        SetAnimationState(Dash_);
+    }
+    float dashMovement = 30.0f;
+    Debug::Log("Performing Dash Movement: " + std::to_string(dashMovement));
 }
 
 void Player::TakeDamage(int amount) {
@@ -253,13 +278,12 @@ void Player::TakeDamage(int amount) {
     else {
         SetAnimationState(Death_);
     }
-    // The KillMe call is now handled in the Update method after animation completion
 }
 
 void Player::PerformAttack() {
-    enemy = dynamic_cast<Enemy*>(FindObject("Enemy")); // Ensure enemy is retrieved
+    enemy = dynamic_cast<Enemy*>(FindObject("Enemy"));
     if (enemy) {
-        CombatSystem::PerformAttack(this, enemy); // Use CombatSystem to handle the attack
+        CombatSystem::PerformAttack(this, enemy);
     }
 }
 
@@ -269,7 +293,7 @@ const std::string& Player::GetName() const {
 
 Attribute* Player::GetAttribute() const {
     if (!acquiredAttributes.empty()) {
-        return acquiredAttributes.front(); // Just returning the first for demonstration
+        return acquiredAttributes.front();
     }
     return nullptr;
 }
@@ -290,6 +314,14 @@ int Player::GetAttackPower() const {
     return attackPower;
 }
 
+void Player::SetName(const std::string& playerName) {
+    name = playerName;
+}
+
+void Player::SetHealth(int newHealth) {
+    health = newHealth;
+}
+
 void Player::AddAttribute(Attribute* attribute) {
     acquiredAttributes.push_back(attribute);
 }
@@ -300,14 +332,6 @@ void Player::SetActiveAttributes(const std::vector<Attribute*>& attributes) {
 
 const std::vector<Attribute*>& Player::GetActiveAttributes() const {
     return activeAttributes;
-}
-
-void Player::SetName(const std::string& playerName) {
-    name = playerName;
-}
-
-void Player::SetHealth(int newHealth) {
-    health = newHealth;
 }
 
 void Player::ApplyPowerUp(int powerUpImageHandle) {
