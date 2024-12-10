@@ -10,9 +10,9 @@
 
 Player::Player(GameObject* parent)
     : GameObject(parent, "Player"),
-    currentState(Death_),
+    currentState(Idle_),
     name(""),
-    health(10),
+    health(30),
     score(0),
     level(1),
     activePowerUp(-1),
@@ -84,26 +84,10 @@ void Player::Update() {
             SetAnimationState(Idle_);
         }
     }
-    else if (currentState == Death_ && !deathAnimationComplete) {
-        deathAnimationComplete = baseAnimation->IsAnimationComplete();
-        if (deathAnimationComplete) {
-            KillMe();
-        }
-    }
+     
 
     attackTimer -= 1.0f / 60.0f;
     Debug::Log("Player Update Call #" + std::to_string(updateCount));
-
-    // Update the camera to follow the player
-    Camera2D* cam = dynamic_cast<Camera2D*>(FindObject("Camera2D"));
-    if (cam) {
-        Debug::Log("Camera2D object found.");
-        XMFLOAT2 playerPos = { transform_.position_.x, transform_.position_.y };
-        cam->SetCameraPos(playerPos);
-    }
-    else {
-        Debug::Log("Camera2D object not found.");
-    }
 
     baseAnimation->Update();
     for (auto anim : overlayAnimations) {
@@ -111,21 +95,11 @@ void Player::Update() {
     }
 }
 void Player::Draw() {
-    Camera2D* cam = dynamic_cast<Camera2D*>(FindObject("Camera2D"));
-    XMFLOAT2 cameraPosition(0.0f, 0.0f);
-    if (cam != nullptr) {
-        cameraPosition = cam->GetScreenPosFromWorldPos({ transform_.position_.x, transform_.position_.y });
-    }
-
-    float drawX = transform_.position_.x - cameraPosition.x; // Convert world position to screen position
-    float drawY = transform_.position_.y - cameraPosition.y; // Convert world position to screen position
-
-    Transform drawTransform;
-    drawTransform.position_ = { drawX, drawY, transform_.position_.z }; // Adjust the Z-axis if needed
-    baseAnimation->Draw(drawTransform, facingRight);
+    
+    baseAnimation->Draw(transform_, facingRight);
 
     for (auto anim : overlayAnimations) {
-        anim->Draw(drawTransform, facingRight);
+        anim->Draw(transform_, facingRight);
     }
 }
 
@@ -168,7 +142,7 @@ void Player::HandleInput() {
         PerformAttack();
         attackTimer = attackCooldown;
     }
-    else if (isGrounded && currentState != Dash_) {
+ else if (isGrounded && currentState != Dash_&&currentState!=Death_) {
         SetAnimationState(Idle_);
     }
 
@@ -208,7 +182,7 @@ void Player::SetAnimationState(State newState) {
 
     if (currentState != newState) {
         currentState = newState;
-        Debug::Log("Changing state to " + std::to_string(newState));
+        Debug::Log("Player is Changing state to " + std::to_string(newState));
 
         switch (newState) {
         case Idle_:
@@ -233,10 +207,11 @@ void Player::SetAnimationState(State newState) {
             baseAnimation->SetAnimation(10, 0.07f, DashImg, 0, 5, false); // Using 5 frames for dash animation
             break;
         case Hit_:
-            baseAnimation->SetAnimation(4, 0.1f, HitImg, 0, false);
+            baseAnimation->SetAnimation(4, 0.1f, HitImg, false);
             break;
         case Death_:
             baseAnimation->SetAnimation(10, 0.055f, DeathImg, false); // Play once, no loop
+
             break;
         }
     }
@@ -266,17 +241,26 @@ void Player::Dash() {
     Debug::Log("Performing Dash Movement: " + std::to_string(dashMovement));
 }
 
+void Player::Death()
+{
+    SetAnimationState(Death_);
+    
+        deathAnimationComplete = baseAnimation->IsAnimationComplete();
+        if (deathAnimationComplete) {
+            KillMe();
+        }
+    
+}
+
 void Player::TakeDamage(int amount) {
-    if (IsDead()) {
-        return;
-    }
+
 
     health -= amount;
     if (health > 0) {
         SetAnimationState(Hit_);
     }
     else {
-        SetAnimationState(Death_);
+        Death();
     }
 }
 

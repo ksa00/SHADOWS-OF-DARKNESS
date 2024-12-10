@@ -13,9 +13,9 @@ TitleScene::TitleScene(GameObject* parent)
 
 void TitleScene::Initialize() {
     // Initialize other game objects if needed
-    Instantiate<Camera2D>(this);
+   // Instantiate<Camera2D>(this);
     Instantiate<Player>(this);
-	//Instantiate<Enemy>(this);
+	Instantiate<Enemy>(this);
 	//Instantiate<Stage>(this);
 }
 

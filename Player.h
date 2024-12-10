@@ -61,6 +61,7 @@ public:
     void Jump();
     void Fall();
     void Dash();
+    void Death();
     void ApplyGravity();
     void HandleInput();
     void CheckLanding();

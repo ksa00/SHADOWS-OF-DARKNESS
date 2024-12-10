@@ -60,8 +60,7 @@ void Animation::Draw(const Transform& transform, bool facingRight) {
 
     int frameIndex = currentFrame - startFrame;
     if (frameIndex < 0 || frameIndex >= static_cast<int>(frames.size())) {
-        Debug::Log("Frame index out of bounds: " + std::to_string(frameIndex) + "\n");
-        return;
+return;
     }
 
     int frameX = frames[frameIndex].left;
@@ -126,5 +125,8 @@ void Animation::CalculateFrames() {
 }
 
 bool Animation::IsAnimationComplete() const {
-    return !loop && currentFrame == startFrame + subsetFrameCount - 1;
+    bool result;
+  
+        result=!loop && currentFrame == startFrame + subsetFrameCount - 1;
+        return result;
 }
