@@ -125,8 +125,6 @@ void Animation::CalculateFrames() {
 }
 
 bool Animation::IsAnimationComplete() const {
-    bool result;
-  
-        result=!loop && currentFrame == startFrame + subsetFrameCount - 1;
-        return result;
+    return(!loop && currentFrame == startFrame + subsetFrameCount - 1);
 }
+

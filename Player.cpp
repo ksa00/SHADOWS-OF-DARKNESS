@@ -18,7 +18,6 @@ Player::Player(GameObject* parent)
     activePowerUp(-1),
     attackPower(10),
     baseAnimation(nullptr),
-    deathAnimationComplete(false),
     isGrounded(true),
     groundLevel(500.0f),
     facingRight(true),
@@ -79,12 +78,8 @@ void Player::Update() {
         ApplyGravity();
         CheckLanding();
 
-        if (currentState == Dash_ && baseAnimation->IsAnimationComplete()) {
-            Debug::Log("Dash animation complete, transitioning to Idle state");
-            SetAnimationState(Idle_);
-        }
     }
-     
+
 
     attackTimer -= 1.0f / 60.0f;
     Debug::Log("Player Update Call #" + std::to_string(updateCount));
@@ -94,6 +89,7 @@ void Player::Update() {
         anim->Update();
     }
 }
+
 void Player::Draw() {
     
     baseAnimation->Draw(transform_, facingRight);
@@ -142,7 +138,7 @@ void Player::HandleInput() {
         PerformAttack();
         attackTimer = attackCooldown;
     }
- else if (isGrounded && currentState != Dash_&&currentState!=Death_) {
+ else if (isGrounded && currentState != Dash_&&currentState!=Death_&&currentState!=Hit_) {
         SetAnimationState(Idle_);
     }
 
@@ -207,10 +203,10 @@ void Player::SetAnimationState(State newState) {
             baseAnimation->SetAnimation(10, 0.07f, DashImg, 0, 5, false); // Using 5 frames for dash animation
             break;
         case Hit_:
-            baseAnimation->SetAnimation(4, 0.1f, HitImg, false);
+            baseAnimation->SetAnimation(4, 0.25f, HitImg, false);
             break;
         case Death_:
-            baseAnimation->SetAnimation(10, 0.055f, DeathImg, false); // Play once, no loop
+            baseAnimation->SetAnimation(10, 0.1f, DeathImg,0,10, false); // Play once, no loop
 
             break;
         }
@@ -234,27 +230,30 @@ void Player::Fall() {
 }
 
 void Player::Dash() {
-    if (currentState != Dash_) {
+    
         SetAnimationState(Dash_);
-    }
     float dashMovement = 30.0f;
     Debug::Log("Performing Dash Movement: " + std::to_string(dashMovement));
+
+    if (baseAnimation->IsAnimationComplete()) {
+        Debug::Log("Dash animation complete, transitioning to Idle state");
+        SetAnimationState(Idle_);
+    }
 }
 
-void Player::Death()
-{
-    SetAnimationState(Death_);
-    
-        deathAnimationComplete = baseAnimation->IsAnimationComplete();
-        if (deathAnimationComplete) {
-            KillMe();
-        }
-    
+void Player::Death() {
+    if (currentState != Death_) {
+        SetAnimationState(Death_);
+    }
+
+    if (baseAnimation->IsAnimationComplete()) {
+     
+        KillMe();
+    }
 }
+
 
 void Player::TakeDamage(int amount) {
-
-
     health -= amount;
     if (health > 0) {
         SetAnimationState(Hit_);
@@ -263,6 +262,7 @@ void Player::TakeDamage(int amount) {
         Death();
     }
 }
+
 
 void Player::PerformAttack() {
     enemy = dynamic_cast<Enemy*>(FindObject("Enemy"));

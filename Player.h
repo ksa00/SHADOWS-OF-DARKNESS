@@ -90,7 +90,6 @@ private:
     std::vector<Attribute*> acquiredAttributes;
 
     Enemy* enemy;
-    bool deathAnimationComplete;
     bool isGrounded;
     float groundLevel;
     bool facingRight;

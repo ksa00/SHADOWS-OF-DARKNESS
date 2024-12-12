@@ -22,6 +22,7 @@ void CombatSystem::PerformAttack(Player* player, Enemy* enemy) {
 
 void CombatSystem::PerformAttack(Enemy* enemy, Player* player) {
     if (enemy && player) {
+        if (player->GetHealth()>0)
         player->TakeDamage(enemy->GetAttackPower());
     
     }
