@@ -136,6 +136,10 @@
     </ClCompile>
     <ClCompile Include="CombatSystem.cpp" />
     <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="NinjaEnemy.cpp" />
+    <ClCompile Include="KnightEnemy.cpp" />
+    <ClCompile Include="AnimalEnemy.cpp" />
+    <ClCompile Include="DroneEnemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\BoxCollider.h">
@@ -245,6 +249,10 @@
     </ClInclude>
     <ClInclude Include="CombatSystem.h" />
     <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="NinjaEnemy.h" />
+    <ClInclude Include="KnightEnemy.h" />
+    <ClInclude Include="AnimalEnemy.h" />
+    <ClInclude Include="DroneEnemy.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Assets\Shader\Simple2D.hlsl">
