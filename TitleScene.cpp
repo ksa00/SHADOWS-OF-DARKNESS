@@ -5,6 +5,12 @@
 #include"Enemy.h"
 #include "Engine/SceneManager.h"
 #include "Engine/Input.h"
+#include"AnimalEnemy.h"
+#include"DroneEnemy.h"
+#include"NinjaEnemy.h"
+#include"KnightEnemy.h"
+
+
 
 TitleScene::TitleScene(GameObject* parent)
     : GameObject(parent, "TitleScene"), isAttributeSelectionNeeded_(false) // Set to true initially to show attribute selection
@@ -15,7 +21,14 @@ void TitleScene::Initialize() {
     // Initialize other game objects if needed
    // Instantiate<Camera2D>(this);
     Instantiate<Player>(this);
-	Instantiate<Enemy>(this);
+//	Instantiate<Enemy>(this);
+
+    // Instantiate derived enemies
+   // Instantiate<DroneEnemy>(this);
+    Instantiate<NinjaEnemy>(this);
+    Instantiate<KnightEnemy>(this);
+    Instantiate<AnimalEnemy>(this);
+
 	//Instantiate<Stage>(this);
 }
 

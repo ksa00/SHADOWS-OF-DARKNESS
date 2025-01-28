@@ -200,7 +200,7 @@ void Player::SetAnimationState(State newState) {
             }
             break;
         case Dash_:
-            baseAnimation->SetAnimation(10, 0.07f, DashImg, 0, 5, false); // Using 5 frames for dash animation
+            baseAnimation->SetAnimation(10, 0.1f, DashImg, 0, 5, false); // Using 5 frames for dash animation
             break;
         case Hit_:
             baseAnimation->SetAnimation(4, 0.25f, HitImg, false);
